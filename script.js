@@ -92,15 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGirar = document.getElementById('girarRoleta');
   const fraseResultado = document.getElementById('fraseResultado');
   const frasesFofas = [
-    "Você ilumina meus dias como um nascer do sol 💛",
+    "Você ilumina meus dias como um nascer do sol ",
     "Você é tão especial que até as estrelas ficam com inveja de você.",
     "Você faz o mundo ficar mais lindo.",
     "Coração quentinho é quando penso em você.",
     "Que bom que você aconteceu na minha vida.",
-    "Você tem um abraço que cura o cansaço.",
-    "Estar com você é estar em casa.",
-    "Você é a razão do meu sorriso.",
-    "Seu jeito de ser é meu aconchego."
+    "um feliz aniversario pra minha pessoa favorita.",
+    "Seu jeito me encanta todos os dias.",  
   ];
   let anguloAtual = 0;
   btnGirar.addEventListener('click', () => {
