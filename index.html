@@ -9,45 +9,94 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+   <!--marie te amo de mais sabia? tu nao vai ler isso mais quero que sabia que eu te amo muito e sempre vou te amar, se vc ler isso ne-->
+  <!-- CSS isolado do jogo -->
+  <style>
+    #ursinho-wrap .game {
+      width: 95%; max-width: 600px; height: 220px;
+      background-color: #fff;
+      border: 4px dashed #f8008c;
+      border-radius: 10px;
+      position: relative; overflow: hidden;
+      touch-action: manipulation;
+      margin: 0 auto;
+    }
+    #ursinho-wrap #character {
+      font-size: 35px; position: absolute; bottom: 0; left: 50px;
+      transition: bottom 0.2s;
+    }
+    #ursinho-wrap #obstacle {
+      font-size: 30px; position: absolute; bottom: 0; left: 100%;
+      animation: ursinho-obstacleMove 2.2s linear infinite;
+      animation-play-state: paused; /* começa parado */
+    }
+    #ursinho-wrap .coin {
+      font-size: 28px; position: absolute;
+      bottom: 40px; /* altura fixa */
+      animation: ursinho-coinMove 3.5s linear forwards;
+    }
+    @keyframes ursinho-obstacleMove { 0% { left: 100%; } 100% { left: -40px; } }
+    @keyframes ursinho-coinMove { 0% { left: 100%; } 100% { left: -40px; } }
+    @keyframes ursinho-jump { 0% { bottom: 0; } 50% { bottom: 100px; } 100% { bottom: 0; } }
+    #ursinho-wrap .jump { animation: ursinho-jump 0.5s ease; }
+    #ursinho-wrap #gameOver, #ursinho-wrap #winScreen, #ursinho-wrap #startScreen {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff; padding: 20px;
+      border: 2px solid #ff6f61; border-radius: 10px;
+      text-align: center; z-index: 10;
+    }
+    #ursinho-wrap #gameOver, #ursinho-wrap #winScreen { display: none; }
+    #ursinho-wrap #gameOver button, #ursinho-wrap #winScreen button {
+      margin-top: 10px; padding: 10px 20px;
+      background: #ff6f61; color: white;
+      border: none; border-radius: 5px; cursor: pointer;
+    }
+    #ursinho-wrap #score, #ursinho-wrap #coins {
+      position: absolute; top: 10px;
+      font-size: 16px; font-weight: bold; color: #ff1493;
+    }
+    #ursinho-wrap #score { right: 15px; }
+    #ursinho-wrap #coins { left: 15px; }
+    #ursinho-wrap #goal {
+      position: absolute; top: 0; left: 0; width: 100%;
+      background: #ffffff; color: #000000;
+      font-size: 16px; font-weight: bold;
+      padding: 5px; text-align: center;
+      z-index: 9; border-bottom: 2px dashed #ff69b4;
+    }
+    #ursinho-wrap .controles {
+      font-size: .95rem; color: #333; margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-  <!-- Fundo animado -->
   <div class="hearts-background"></div>
 
   <div class="container">
-    <!-- Header -->
     <header class="header">
       <h1 class="main-title">Feliz Aniversário!</h1>
       <div class="subtitle">💕 Para alguém muito especial 💕</div>
     </header>
 
-    <!-- Imagens -->
+    <!-- Card com imagens -->
     <div class="card">
       <img class="omori-img" src="assets/Omori.webp" alt="Omori" />
       <img class="extra-img" src="assets/nyan-cat-rainbow.gif" alt="Outra imagem especial" />
-      <p>
-        Feliz aniversário, meu amor! 💜  
-        Espero que você tenha um dia incrível e cheio de coisas boas!
-      </p>
+      <p>Feliz aniversário, meu amor! 💜<br>Espero que você tenha um dia incrível e cheio de coisas boas!</p>
     </div>
 
-    <!-- Funny quote -->
-    <div class="card">
-      <div class="funny-quote" title="Clique para ler a verdade">
-        Clique aqui
-      </div>
-    </div>
+    <!-- Frase engraçada -->
+    <div class="card"><div class="funny-quote">Clique aqui</div></div>
 
-    <!-- Surpresa -->
+    <!-- Surpresas -->
     <div class="card">
       <button class="surprise-btn">Clique para ver uma surpresa 💌</button>
       <div class="surprise-message" id="surpriseMessage">
-        Eu te amo muito! 💕  
-        Fiz esse presentinho com carinho, espero que goste.  
+        Eu te amo muito! 💕<br>Fiz esse presentinho com carinho, espero que goste.<br>
         Que a gente possa passar muitos aniversários juntos! 💫
       </div>
-
-      <!-- Botão secreto que aparece depois -->
       <button class="last-gift-btn" id="lastGiftBtn">Abrir último presente 🎁</button>
       <div class="last-gift" id="lastGift">
         <p>Esse é um presente secreto só pra você 💜✨</p>
@@ -55,7 +104,7 @@
       </div>
     </div>
 
-    <!-- Roleta de frases -->
+    <!-- Roleta -->
     <div class="card" id="roleta-section">
       <h2>Roleta de Frases Fofas 🎡</h2>
       <div class="roleta-container">
@@ -67,21 +116,149 @@
       </p>
     </div>
 
-    <!-- Botões extras -->
-    <a href="jogo.html" target="_blank" class="jogo-btn">
-      Jogar o Joguinho do Ursinho 🧸
-    </a>
+    <!-- Jogo do Ursinho -->
+    <div class="card" id="ursinho-wrap">
+      <h2>Joguinho do Ursinho 🧸</h2>
+      <p class="controles"><strong>PC:</strong> Espaço / Clique &nbsp;•&nbsp;
+      <strong>Celular:</strong> Toque na tela</p>
 
-    <a href="idex2.html" target="_blank" class="creditos-criador">
+      <div class="game" id="game">
+        <div id="goal">Pegue 5 moedas para ganhar o jogo!</div>
+        <div id="character">🧸</div>
+        <div id="obstacle">💣</div>
+        <div id="score">Pontos: 0</div>
+        <div id="coins">Moedas: 0</div>
+
+        <!-- Tela inicial -->
+        <div id="startScreen">
+          <p>✨ Clique ou aperte <b>ESPAÇO</b> para começar ✨</p>
+        </div>
+
+        <!-- Tela de game over -->
+        <div id="gameOver">
+          Game Over 😭<br><div id="finalScore"></div>
+          <button onclick="ursinhoRestart()">Tentar de novo</button>
+        </div>
+
+        <!-- Tela de vitória -->
+        <div id="winScreen">
+          Você conseguiu!!! PARABÉNS💘💘💘<br><div id="finalScoreWin"></div>
+          <a href="#ursinho-wrap"><button>EU TE AMO!</button></a>
+        </div>
+      </div>
+    </div>
+
+    <a href="idex2.html" class="creditos-criador">
       𝗖𝗹𝗶𝗾𝘂𝗲 𝗮𝗾𝘂𝗶 𝗱𝗲𝗽𝗼𝗶𝘀 𝗱𝗲 𝘃𝗲𝗿 𝘁𝘂𝗱𝗶𝗻𝗵𝗼
     </a>
 
-    <!-- Footer -->
-    <footer>
-      <p>Feito com 💜 por Arthur</p>
-    </footer>
+    <footer><p>Feito com 💜 por Arthur</p></footer>
   </div>
 
+  <!-- Script principal do site -->
   <script src="script.js"></script>
+
+  <!-- Script isolado do jogo -->
+  <script>
+  (function(){
+    let character, obstacle, gameOver, winScreen, scoreDisplay, coinsDisplay, startScreen;
+    let score = 0, coins = 0, isJumping = false, coinInterval, gameInterval;
+    let gameStarted = false;
+
+    function startGame() {
+      if (gameStarted) return;
+      gameStarted = true;
+      startScreen.style.display = "none";
+
+      character = document.getElementById("character");
+      obstacle = document.getElementById("obstacle");
+      gameOver = document.getElementById("gameOver");
+      winScreen = document.getElementById("winScreen");
+      scoreDisplay = document.getElementById("score");
+      coinsDisplay = document.getElementById("coins");
+
+      // agora a bomba começa a andar
+      obstacle.style.animationPlayState = "running";
+
+      // controles de pulo
+      document.addEventListener("keydown", e => { if (e.code==="Space") jump(); });
+      document.addEventListener("click", jump);
+      document.addEventListener("touchstart", jump);
+
+      gameInterval = setInterval(checkCollision, 15);
+      coinInterval = setInterval(createCoin, 3500);
+    }
+
+    function jump() {
+      if (!gameStarted) return;
+      if (isJumping) return;
+      isJumping = true;
+      character.classList.add("jump");
+      setTimeout(()=>{ character.classList.remove("jump"); isJumping=false; },500);
+    }
+
+    function checkCollision() {
+      const charRect = character.getBoundingClientRect();
+      const obsRect = obstacle.getBoundingClientRect();
+
+      // reduzir hitbox da bomba
+      const shrink = 25;
+      const obsBox = {
+        left: obsRect.left + shrink,
+        right: obsRect.right - shrink,
+        top: obsRect.top + shrink,
+        bottom: obsRect.bottom - shrink
+      };
+
+      if (charRect.left < obsBox.right &&
+          charRect.right > obsBox.left &&
+          charRect.bottom > obsBox.top) {
+        endGame(false);
+      }
+
+      document.querySelectorAll("#ursinho-wrap .coin").forEach(coin=>{
+        const coinRect = coin.getBoundingClientRect();
+        if (charRect.left < coinRect.right &&
+            charRect.right > coinRect.left &&
+            charRect.bottom > coinRect.top) {
+          coin.remove(); 
+          coins++; 
+          coinsDisplay.textContent = "Moedas: " + coins;
+          if (coins >= 5) endGame(true);
+        }
+      });
+
+      score++; scoreDisplay.textContent="Pontos: "+score;
+    }
+
+    function createCoin() {
+      if (!gameStarted) return;
+      const coin = document.createElement("div");
+      coin.classList.add("coin"); 
+      coin.textContent = "🪙";
+      coin.style.bottom = "40px"; 
+      coin.style.left = "100%";
+      document.getElementById("game").appendChild(coin);
+    }
+
+    function endGame(win) {
+      clearInterval(gameInterval); clearInterval(coinInterval);
+      if(win){ winScreen.style.display="block";
+        document.getElementById("finalScoreWin").textContent="Pontuação: "+score;
+      } else { gameOver.style.display="block";
+        document.getElementById("finalScore").textContent="Pontuação: "+score;
+      }
+    }
+
+    window.ursinhoRestart = function(){ location.reload(); }
+
+    // inicia só com clique ou barra de espaço
+    window.addEventListener("click", ()=>{ if(!gameStarted) startGame(); });
+    window.addEventListener("keydown", e=>{ if(e.code==="Space" && !gameStarted) startGame(); });
+
+    // pegar a tela inicial
+    startScreen = document.getElementById("startScreen");
+  })();
+  </script>
 </body>
 </html>

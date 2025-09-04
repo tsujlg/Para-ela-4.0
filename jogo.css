@@ -46,13 +46,16 @@ body {
   position: absolute;
   bottom: 0;
   left: 100%;
-  animation: obstacleMove 2s linear infinite;
+  animation: ursinho-obstacleMove 3.5s linear infinite;
+  animation-play-state: paused; /* começa pausado */
 }
 
+
 .coin {
-  font-size: 24px;
+  font-size: 28px; 
   position: absolute;
-  animation: coinMove 3s linear infinite;
+  bottom: 40px; /* altura fixa */
+  animation: ursinho-coinMove 3.5s linear forwards; /* forwards = só some no final */
 }
 
 @keyframes obstacleMove {
