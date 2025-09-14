@@ -1,117 +1,135 @@
-const character = document.getElementById("character");
-const obstacle = document.getElementById("obstacle");
-const gameOver = document.getElementById("gameOver");
-const winScreen = document.getElementById("winScreen");
-const scoreDisplay = document.getElementById("score");
-const coinsDisplay = document.getElementById("coins");
-const finalScore = document.getElementById("finalScore");
-const finalScoreWin = document.getElementById("finalScoreWin");
-const game = document.getElementById("game");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = 400;
+canvas.height = 500;
 
-let score = 0;
-let coins = 0;
-let isJumping = false;
-let gameInterval;
-let scoreInterval;
-let coinInterval;
+let bear, coins, bombs, score, gameOver, victory, animationId;
+const coinSound = document.getElementById("coinSound");
+const boomSound = document.getElementById("boomSound");
+const victorySound = document.getElementById("victorySound");
 
-// 🟢 Pulando com tempo de bloqueio reduzido
-function jump() {
-    if (!isJumping) {
-        isJumping = true;
-        character.classList.add("jump");
-        setTimeout(() => {
-            character.classList.remove("jump");
-            isJumping = false;
-        }, 400); // 🔥 Diminuiu de 500 para 400ms (mais rápido)
+function resetGame() {
+  bear = { x: 180, y: 420, size: 40, speed: 5 };
+  coins = Array.from({ length: 5 }, () => ({
+    x: Math.random() * 360,
+    y: Math.random() * 400,
+    size: 20
+  }));
+  bombs = Array.from({ length: 3 }, () => ({
+    x: Math.random() * 360,
+    y: Math.random() * 400,
+    size: 25
+  }));
+  score = 0;
+  gameOver = false;
+  victory = false;
+}
+
+function drawBear() {
+  ctx.fillStyle = "#b5651d";
+  ctx.beginPath();
+  ctx.arc(bear.x, bear.y, bear.size, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawCoin(coin) {
+  ctx.fillStyle = "gold";
+  ctx.beginPath();
+  ctx.arc(coin.x, coin.y, coin.size, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+}
+
+function drawBomb(bomb) {
+  ctx.fillStyle = "black";
+  ctx.beginPath();
+  ctx.arc(bomb.x, bomb.y, bomb.size, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function checkCollision(a, b) {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  return distance < a.size + b.size;
+}
+
+function addHeart(x, y, emoji) {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerText = emoji;
+  heart.style.left = x + "px";
+  heart.style.top = y + "px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 1000);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBear();
+
+  coins.forEach((coin, i) => {
+    drawCoin(coin);
+    if (checkCollision(bear, coin)) {
+      coins.splice(i, 1);
+      score++;
+      coinSound.play();
+      addHeart(bear.x + 200, bear.y + 50, "❤️");
+      if (score >= 5) {
+        victory = true;
+        document.getElementById("victory").classList.remove("hidden");
+        victorySound.play();
+        cancelAnimationFrame(animationId); // PAUSA na vitória
+      }
     }
+  });
+
+  bombs.forEach((bomb) => {
+    drawBomb(bomb);
+    if (checkCollision(bear, bomb)) {
+      gameOver = true;
+      document.getElementById("gameOver").classList.remove("hidden");
+      boomSound.play();
+      addHeart(bear.x + 200, bear.y + 50, "💔");
+      cancelAnimationFrame(animationId); // PAUSA no game over
+    }
+  });
 }
 
-// Teclado e toque para pular
-document.addEventListener("keydown", e => {
-    if (e.code === "Space" || e.code === "ArrowUp") jump();
+function update() {
+  if (!gameOver && !victory) {
+    draw();
+    animationId = requestAnimationFrame(update);
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft" && bear.x - bear.size > 0) bear.x -= bear.speed;
+  if (e.key === "ArrowRight" && bear.x + bear.size < canvas.width) bear.x += bear.speed;
+  if (e.key === "ArrowUp" && bear.y - bear.size > 0) bear.y -= bear.speed;
+  if (e.key === "ArrowDown" && bear.y + bear.size < canvas.height) bear.y += bear.speed;
 });
-game.addEventListener("touchstart", () => jump());
-game.addEventListener("click", () => jump());
 
-// 🪙 Gerar moedas em posição mais baixa e fácil de pegar
-function spawnCoin() {
-    const coin = document.createElement("div");
-    coin.classList.add("coin");
-    coin.innerText = "🪙";
-    coin.style.left = "100%";
-    coin.style.top = "100px"; // 🔥 Sempre na mesma altura, ao alcance do pulo
-    game.appendChild(coin);
+// 🎮 Controle de toque (apenas dentro do canvas)
+canvas.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
 
-    const move = setInterval(() => {
-        const coinLeft = parseInt(window.getComputedStyle(coin).getPropertyValue("left"));
-        const coinTop = parseInt(window.getComputedStyle(coin).getPropertyValue("top"));
-        const charTop = 220 - parseInt(window.getComputedStyle(character).getPropertyValue("bottom"));
-        const charLeft = 50;
+  if (x < bear.x) bear.x -= bear.speed; // toca à esquerda → move
+  if (x > bear.x) bear.x += bear.speed; // toca à direita → move
+  if (y < bear.y) bear.y -= bear.speed; // toca acima → move
+  if (y > bear.y) bear.y += bear.speed; // toca abaixo → move
+});
 
-        if (
-            coinLeft < charLeft + 30 &&
-            coinLeft > charLeft - 20 &&
-            Math.abs(coinTop - charTop) < 40
-        ) {
-            coin.remove();
-            coins++;
-            coinsDisplay.innerText = "Moedas: " + coins;
-
-            if (coins >= 5) {
-                clearInterval(gameInterval);
-                clearInterval(scoreInterval);
-                clearInterval(coinInterval);
-                obstacle.style.animation = "none";
-                winScreen.style.display = "block";
-                finalScoreWin.innerText = `Pontuação: ${score}`;
-            }
-        }
-
-        if (coinLeft < -20) {
-            coin.remove();
-            clearInterval(move);
-        }
-    }, 50);
+function restartGame() {
+  document.getElementById("gameOver").classList.add("hidden");
+  document.getElementById("victory").classList.add("hidden");
+  resetGame();
+  update();
 }
 
-function startGame() {
-    score = 0;
-    coins = 0;
-    coinsDisplay.innerText = "Moedas: 0";
-    scoreDisplay.innerText = "Pontos: 0";
-    obstacle.style.animation = "obstacleMove 2s linear infinite";
-
-    scoreInterval = setInterval(() => {
-        score++;
-        scoreDisplay.innerText = "Pontos: " + score;
-    }, 100);
-
-    gameInterval = setInterval(() => {
-        const characterBottom = parseInt(window.getComputedStyle(character).getPropertyValue("bottom"));
-        const obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
-
-        if (obstacleLeft < 70 && obstacleLeft > 50 && characterBottom < 40) {
-            gameOver.style.display = "block";
-            finalScore.innerText = `Sua pontuação: ${score}`;
-            obstacle.style.animation = "none";
-            obstacle.style.left = obstacleLeft + "px";
-            clearInterval(gameInterval);
-            clearInterval(scoreInterval);
-            clearInterval(coinInterval);
-        }
-    }, 10);
-
-    coinInterval = setInterval(spawnCoin, 1500);
-}
-
-function restart() {
-    document.querySelectorAll(".coin").forEach(c => c.remove());
-    gameOver.style.display = "none";
-    winScreen.style.display = "none";
-    obstacle.style.left = "100%";
-    obstacle.style.animation = "obstacleMove 2s linear infinite";
-    startGame();
-}
-
-window.onload = () => startGame();
+resetGame();
+update();
